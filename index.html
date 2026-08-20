@@ -812,11 +812,12 @@
             const marksData = JSON.parse(localStorage.getItem('marks') || '{}');
             const presentData = JSON.parse(localStorage.getItem('present') || '{}');
             const overallData = JSON.parse(localStorage.getItem('overall') || '{}');
-            return { programmes: programmes, marksData: marksData, presentData: presentData, overallData: overallData };
+            const overallScores = JSON.parse(localStorage.getItem('overallScores') || '{}');
+            return { programmes: programmes, marksData: marksData, presentData: presentData, overallData: overallData, overallScores: overallScores };
         }
 
         function syncData(cb) {
-            Promise.all([Sync.loadProgrammes(), Sync.loadAllMarks(), Sync.loadPresent(), Sync.loadOverall()])
+            Promise.all([Sync.loadProgrammes(), Sync.loadAllMarks(), Sync.loadPresent(), Sync.loadOverall(), Sync.loadOverallScores()])
                 .then(function () { cb(getData()); })
                 .catch(function () { cb(getData()); });
         }
@@ -844,6 +845,22 @@
         }
 
         function computeOverall(d) {
+            const manual = d.overallScores || {};
+            const hasManual = ['A', 'B', 'C'].some(function (l) {
+                return manual[l] != null && manual[l] !== '';
+            });
+            if (hasManual) {
+                const avgs = { A: null, B: null, C: null };
+                const vals = [];
+                ['A', 'B', 'C'].forEach(function (l) {
+                    if (manual[l] != null && manual[l] !== '') {
+                        avgs[l] = Number(manual[l]);
+                        vals.push(avgs[l]);
+                    }
+                });
+                const denom = vals.length ? Math.max.apply(null, vals) : 0;
+                return { avgs: avgs, programmeTotal: denom, overall: true };
+            }
             const progs = getOverall(d).filter(function (p) {
                 return hasResults(d, p);
             });
@@ -941,6 +958,8 @@
 
         function hasBarData() {
             var d = getData();
+            var manual = d.overallScores || {};
+            if (['A', 'B', 'C'].some(function (l) { return manual[l] != null && manual[l] !== ''; })) return true;
             var present = getPresent(d);
             for (var i = 0; i < present.length; i++) {
                 if (hasResults(d, present[i])) return true;
@@ -1482,7 +1501,11 @@
             const list = withResults.length ? withResults : presentProgrammes;
             let sel, res;
             if (selectedProgramme === '__OVERALL__') {
-                if (overallProgrammes.length === 0) {
+                const manual = d.overallScores || {};
+                const hasManual = ['A', 'B', 'C'].some(function (l) {
+                    return manual[l] != null && manual[l] !== '';
+                });
+                if (overallProgrammes.length === 0 && !hasManual) {
                     return { html: '<p class="waiting">No programmes added to Overall yet.</p>', animate: false };
                 }
                 sel = { name: 'Overall' };
@@ -1555,9 +1578,13 @@
                         applyBarHeights(main);
                     }
                 } else {
-                    main.querySelectorAll('#bars .bar').forEach(function (b) {
-                        b.style.height = '0px';
-                    });
+                    if (window.innerWidth < 768) {
+                        applyBarHeights(main);
+                    } else {
+                        main.querySelectorAll('#bars .bar').forEach(function (b) {
+                            b.style.height = '0px';
+                        });
+                    }
                 }
                 main.querySelectorAll('.prog-btn').forEach(function (btn) {
                     btn.addEventListener('click', function () {
@@ -1899,6 +1926,7 @@
             renderWith(getData());
         });
         Sync.listenOverall(function () { renderWith(getData()); });
+        Sync.listenOverallScores(function () { renderWith(getData()); });
         Sync.listenMarks(function () { renderWith(getData()); });
         setInterval(function () { syncData(function (d) { renderWith(d); }); }, 60000);
 
