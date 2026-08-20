@@ -448,6 +448,31 @@
             background-color: #C77E3F;
             color: #FFFFFF;
         }
+        .ov-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid #E5DED4;
+        }
+        .ov-row:last-child {
+            border-bottom: none;
+        }
+        .ov-team {
+            font-weight: 700;
+            font-size: 16px;
+            color: #023047;
+        }
+        .ov-place {
+            font-size: 14px;
+            font-weight: 700;
+            color: #023047;
+        }
+        .ov-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: #023047;
+        }
         .announce-title {
             color: #023047;
             font-size: 18px;
@@ -737,9 +762,6 @@
             .mobile-bottom-nav {
                 display: flex;
             }
-            .mobile-bottom-nav a#nav-overall {
-                display: none;
-            }
             .main-area {
                 padding: 16px 12px 0;
             }
@@ -835,8 +857,13 @@
                 })
                 .then(function (d) {
                     if (d.exists && d.data().mode === 'overall') {
-                        view = 'bars';
-                        selectedProgramme = '__OVERALL__';
+                        if (window.innerWidth < 768) {
+                            view = 'overall-values';
+                            selectedProgramme = null;
+                        } else {
+                            view = 'bars';
+                            selectedProgramme = '__OVERALL__';
+                        }
                         lastAnimated = null;
                     }
                     cb(getData());
@@ -1020,6 +1047,31 @@
                 return '<div class="card"><p class="waiting">No programmes yet</p></div>';
             }
             return renderRanks({ name: 'Overall' }, res);
+        }
+
+        function renderOverallValues(d) {
+            const res = computeOverall(d);
+            const ranked = rankLetters(res.avgs);
+            let html = '<div class="card"><div class="prog-name">Overall Values</div>';
+            if (ranked.length === 0) {
+                html += '<p class="waiting">No overall scores entered yet.</p></div>';
+                return html;
+            }
+            let place = 1;
+            ranked.forEach(function (letter, i) {
+                if (i > 0) {
+                    const prevVal = Math.round((res.avgs[ranked[i - 1]] || 0) * 10) / 10;
+                    const curVal = Math.round((res.avgs[letter] || 0) * 10) / 10;
+                    if (prevVal !== curVal) place = place + 1;
+                }
+                html += '<div class="ov-row">' +
+                    '<span class="ov-team" style="color:' + ({ A: '#F8C025', B: '#E54438', C: '#48A82E' }[letter] || '#023047') + ';">' + SCHOOL_NAMES[letter] + '</span>' +
+                    '<span class="ov-place">' + (place === 1 ? '1st' : place === 2 ? '2nd' : '3rd') + '</span>' +
+                    '<span class="ov-val">' + (res.avgs[letter] != null ? res.avgs[letter].toFixed(1) : '-') + '</span>' +
+                    '</div>';
+            });
+            html += '</div>';
+            return html;
         }
 
         function hasResults(d, p) {
@@ -1566,6 +1618,10 @@
                 main.innerHTML = renderOverallPoints(d);
                 return;
             }
+            if (view === 'overall-values') {
+                main.innerHTML = renderOverallValues(d);
+                return;
+            }
             if (view === 'videos') {
                 loadTeamVideos();
                 return;
@@ -1941,8 +1997,13 @@
             e.preventDefault();
             setActiveNav('nav-overall');
             showNavLoader(function () {
-                view = 'bars';
-                selectedProgramme = '__OVERALL__';
+                if (window.innerWidth < 768) {
+                    view = 'overall-values';
+                    selectedProgramme = null;
+                } else {
+                    view = 'bars';
+                    selectedProgramme = '__OVERALL__';
+                }
                 lastAnimated = null;
                 resetReveal();
                 render();
@@ -1986,8 +2047,13 @@
         db.collection('app').doc('display').onSnapshot(function (d) {
             var mode = d.exists ? d.data().mode : null;
             if (mode === 'overall') {
-                view = 'bars';
-                selectedProgramme = '__OVERALL__';
+                if (window.innerWidth < 768) {
+                    view = 'overall-values';
+                    selectedProgramme = null;
+                } else {
+                    view = 'bars';
+                    selectedProgramme = '__OVERALL__';
+                }
                 lastAnimated = null;
                 resetReveal();
                 render();
