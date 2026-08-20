@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audience</title>
+    <link rel="icon" href="trophy.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
     <style>
         * {
@@ -1949,12 +1950,14 @@
                 lastAnimated = null;
                 resetReveal();
                 render();
+                if (window.innerWidth < 768) setActiveNav('nav-overall');
             } else if (selectedProgramme === '__OVERALL__') {
                 view = 'bars';
                 selectedProgramme = null;
                 lastAnimated = null;
                 resetReveal();
                 render();
+                if (window.innerWidth < 768) setActiveNav('nav-ranks');
             }
         }, function () {});
 
