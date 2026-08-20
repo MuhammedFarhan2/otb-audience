@@ -823,7 +823,17 @@
 
         function syncData(cb) {
             Promise.all([Sync.loadProgrammes(), Sync.loadAllMarks(), Sync.loadPresent(), Sync.loadOverall(), Sync.loadOverallScores()])
-                .then(function () { cb(getData()); })
+                .then(function () {
+                    return db.collection('app').doc('display').get();
+                })
+                .then(function (d) {
+                    if (d.exists && d.data().mode === 'overall') {
+                        view = 'bars';
+                        selectedProgramme = '__OVERALL__';
+                        lastAnimated = null;
+                    }
+                    cb(getData());
+                })
                 .catch(function () { cb(getData()); });
         }
 
@@ -1564,6 +1574,9 @@
                     const res = computeResults(d, p);
                     html += renderRanks(p, res);
                 });
+                if (!html) {
+                    html = '<div class="card"><p class="waiting">No programmes marked as present yet.</p></div>';
+                }
                 main.innerHTML = html;
                 return;
             }
