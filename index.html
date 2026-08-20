@@ -1507,15 +1507,7 @@
             renderWith(getData());
         }
 
-        function updateOverallNav(d) {
-            var el = document.getElementById('nav-overall');
-            if (el) {
-                el.style.display = getOverall(d).length > 0 ? '' : 'none';
-            }
-        }
-
         function renderWith(d) {
-            updateOverallNav(d);
             if (view === 'bars' && revealStage !== 0) return;
             const presentProgrammes = getPresent(d);
             const main = document.getElementById('main-area');
