@@ -745,6 +745,10 @@
                 width: 100%;
                 max-width: 170px;
             }
+            .chart {
+                height: calc(100vh - 150px);
+                min-height: calc(100vh - 150px);
+            }
         }
     </style>
 </head>
@@ -1580,6 +1584,13 @@
                 } else {
                     if (window.innerWidth < 768) {
                         applyBarHeights(main);
+                        main.querySelectorAll('#bars .bar').forEach(function (b) {
+                            const letter = b.getAttribute('data-letter');
+                            setBarColor(b, SCHOOL_COLORS[letter] || 'grey');
+                        });
+                        main.querySelectorAll('.col-school').forEach(function (s) {
+                            s.classList.remove('hidden-school');
+                        });
                     } else {
                         main.querySelectorAll('#bars .bar').forEach(function (b) {
                             b.style.height = '0px';
