@@ -416,6 +416,7 @@
         .rank-vcol .rv-bar {
             width: 100%;
             min-height: 4px;
+            background: var(--bar-color, #C9D2D9);
             border-radius: 12px 12px 8px 8px;
             transition: height 0.6s ease;
         }
@@ -699,7 +700,14 @@
             padding: 0;
         }
         @media (max-width: 767px) {
+            body {
+                padding-top: 62px;
+                padding-bottom: 90px;
+            }
             .top-bar {
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
                 padding: 12px 14px;
             }
             .top-title {
