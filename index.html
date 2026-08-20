@@ -1398,7 +1398,8 @@
                         revealedProgrammes.push(selectedProgramme);
                     }
                 } else if (tieFirst) {
-                    lockBarWithColor(idx[2], false);
+                    lockBarWithColor(idx[2], true);
+                    showWinnerText(placeLetter(idx.length - 1), 'once');
                     [idx[0], idx[1]].forEach(function (i) {
                         riseBar(bars[i]);
                         setBlink(i, true);
