@@ -1948,8 +1948,21 @@
         refreshInterval = setInterval(function () { renderWith(getData()); }, 100);
         Sync.listenProgrammes(function () { renderWith(getData()); });
         Sync.listenPresent(function () {
+            var d = getData();
+            var presentName = null;
+            d.programmes.forEach(function (p) {
+                if (d.presentData[p.name] === true) presentName = p.name;
+            });
+            if (presentName && window.innerWidth >= 768) {
+                view = 'bars';
+                selectedProgramme = presentName;
+                lastAnimated = null;
+                resetReveal();
+                document.querySelector('.top-bar').style.display = '';
+                renderWith(d);
+                return;
+            }
             if (selectedProgramme === '__OVERALL__') {
-                var d = getData();
                 if (getPresent(d).length > 0) {
                     selectedProgramme = null;
                     lastAnimated = null;
