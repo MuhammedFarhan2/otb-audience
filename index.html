@@ -462,8 +462,8 @@
         }
         .chart {
             position: relative;
-            height: 100vh;
-            min-height: 100vh;
+            height: calc(100vh - 64px);
+            min-height: calc(100vh - 64px);
             margin-top: 0;
         }
         .bars {
@@ -736,7 +736,7 @@
                 display: flex;
             }
             .main-area {
-                padding: 0;
+                padding: 16px 12px 0;
             }
             .split {
                 flex-direction: column;
