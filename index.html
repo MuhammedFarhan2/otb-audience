@@ -1398,7 +1398,7 @@
                         revealedProgrammes.push(selectedProgramme);
                     }
                 } else if (tieFirst) {
-                    lockBarWithColor(idx[2], true);
+                    lockBarWithColor(idx[2], false);
                     [idx[0], idx[1]].forEach(function (i) {
                         riseBar(bars[i]);
                         setBlink(i, true);
