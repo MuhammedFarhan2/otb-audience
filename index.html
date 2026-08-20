@@ -1574,7 +1574,10 @@
                         html += renderRanks({ name: 'Overall' }, overallRes);
                     }
                 }
-                presentProgrammes.forEach(function (p) {
+                const ordered = presentProgrammes.slice().sort(function (a, b) {
+                    return (d.presentData[b.name] ? 1 : 0) - (d.presentData[a.name] ? 1 : 0);
+                });
+                ordered.forEach(function (p) {
                     const res = computeResults(d, p);
                     html += renderRanks(p, res);
                 });
