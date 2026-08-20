@@ -947,8 +947,13 @@
             } else {
                 const maxVal = Math.max.apply(null, ranked.map(function (l) { return res.avgs[l] || 0; }));
                 html += '<div class="rank-vchart">';
+                let tiePlace = 1;
                 ranked.forEach(function (letter, i) {
-                    const place = i + 1;
+                    if (i > 0) {
+                        const prevVal = Math.round((res.avgs[ranked[i - 1]] || 0) * 10) / 10;
+                        const curVal = Math.round((res.avgs[letter] || 0) * 10) / 10;
+                        if (prevVal !== curVal) tiePlace = tiePlace + 1;
+                    }
                     const avg = res.avgs[letter] || 0;
                     const pct = maxVal > 0 ? avg / maxVal * 100 : 0;
                     html += '<div class="rank-vcol">' +
@@ -957,7 +962,7 @@
                         '<div class="rv-bar bar-' + SCHOOL_COLORS[letter] + '" style="height:' + pct + '%"></div>' +
                         '</div>' +
                         '<div class="rv-val">' + avg.toFixed(1) + '</div>' +
-                        '<span class="rv-place g' + place + '">' + (place === 1 ? '1st' : place === 2 ? '2nd' : '3rd') + '</span>' +
+                        '<span class="rv-place g' + tiePlace + '">' + (tiePlace === 1 ? '1st' : tiePlace === 2 ? '2nd' : '3rd') + '</span>' +
                         '</div>';
                 });
                 html += '</div>';
