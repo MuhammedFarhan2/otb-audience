@@ -730,6 +730,10 @@
             .video-player-wrap {
                 display: none !important;
             }
+            .winner-marquee,
+            .third-marquee {
+                display: none !important;
+            }
             .mobile-bottom-nav {
                 display: flex;
             }
@@ -961,7 +965,7 @@
 
         function getPresent(d) {
             return d.programmes.filter(function (p) {
-                return d.presentData[p.name] === true;
+                return d.presentData[p.name] === true || hasResults(d, p);
             });
         }
 
